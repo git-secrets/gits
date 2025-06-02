@@ -108,14 +108,16 @@ fn run_git_command(args: &[String]) -> Result<ExitStatus> {
     
     debug!("Running git command with args: {:?}", args);
     
-    let status = Command::new("git")
+    let output = Command::new("git")
         .env("GIT_DIR", &gits_dir)
         .env("GIT_WORK_TREE", &current_dir)
         .args(args)
-        .status()
+        .output()
         .context("Failed to execute git command")?;
-    
-    Ok(status)
+    io::stdout().write_all(&output.stdout)?;
+    io::stderr().write_all(&output.stderr)?;
+
+    Ok(output.status)
 }
 
 /// Ensure a directory exists, creating it if necessary
