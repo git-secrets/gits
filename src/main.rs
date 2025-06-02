@@ -44,7 +44,7 @@ fn main() -> Result<()> {
 
 /// Initialize a new .gits repository in the current directory
 fn init_gits_repo() -> Result<()> {
-    let current_dir = env::current_dir()?;
+    let current_dir = find_git_root()?;
     let gits_dir = current_dir.join(".gits");
     
     // Check if .git exists (we're in a git repo)
@@ -125,4 +125,21 @@ fn ensure_directory_exists(path: &Path) -> Result<()> {
             .context(format!("Failed to create directory: {}", path.display()))?;
     }
     Ok()
+}
+
+fn find_git_root() -> Result<PathBuf> {
+    let output = Command::new("git")
+        .args(["rev-parse", "--show-toplevel"])
+        .output()
+        .context("Failed to execute git rev-parse")?;
+
+    if !output.status.success() {
+        return Err(anyhow::anyhow!("Not in a git repository"));
+    }
+
+    let path_str = String::from_utf8(output.stdout)
+        .context("Invalid UTF-8 in git output")?
+        .trim().to_string();
+
+    Ok(PathBuf::from(path_str))
 }
