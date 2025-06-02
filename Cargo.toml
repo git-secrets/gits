@@ -1,0 +1,13 @@
+[package]
+name = "gits"
+version = "0.1.0"
+edition = "2024"
+description = "A Git wrapper for sensitive files"
+authors = ["Your Name <your.email@example.com>"]
+
+[dependencies]
+clap = { version = "4.4", features = ["derive"] }
+anyhow = "1.0"
+thiserror = "1.0"
+log = "0.4"
+env_logger = "0.10"
